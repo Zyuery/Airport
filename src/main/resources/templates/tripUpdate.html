@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新行程</title>
+    <!-- 引入Bootstrap CSS（使用.bootcdn.cn镜像源） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">更新行程</h1>
+    <form id="tripUpdateForm">
+        <div class="mb-3">
+            <label for="tripId" class="form-label">请输入要更新的行程ID</label>
+            <input type="number" class="form-control" id="tripId" required>
+        </div>
+        <div class="mb-3">
+            <label for="tripNumber" class="form-control">行程编号（唯一）</label>
+            <input type="text" class="form-control" id="tripNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="startTime" class="form-control">开始时间</label>
+            <input type="date" class="form-control" id="startTime" required>
+        </div>
+        <div class="mb-3">
+            <label for="endTime" class="form-control">结束时间</label>
+            <input type="date" class="form-control" id="endTime" required>
+        </div>
+        <div class="mb-3">
+            <label for="startLocation" class="form-control">出发地</label>
+            <select class="form-select" id="startLocation" required>
+                <!-- 这里可以通过JavaScript动态添加中国大陆的城市选项，示例先写几个常见城市 -->
+                <option value="北京">北京</option>
+                <option value="上海">上海</option>
+                <option value="广州">广州</option>
+                <option value="深圳">深圳</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <instructions for="endLocation" class="form-control">目的地</instructions>
+            <select class="form-select" id="endLocation" required>
+                <!-- 这里可以通过JavaScript动态添加中国大陆的城市选项，示例先写几个常见城市 -->
+                <option value="北京">北京</option>
+                <option value="上海">上海</option>
+                <option value="广州">广州</option>
+                <option value="深圳">深圳</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="flightNumber" class="form-control">航班号</label>
+            <input type="text" class="form-control" id="flightNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="airline" class="form-control">航空公司</label>
+            <select class="form-select" id="airline" required>
+                <!-- 这里可以通过JavaScript动态添加中国的航空公司选项，示例先写几个常见航空公司 -->
+                <option value="中国国际航空股份有限公司">中国国际航空股份有限公司</option>
+                <option value="中国东方航空股份有限公司">中国东方航空股份有限公司</option>
+                <option value="中国南方航空股份有限公司">中国南方航空股份有限公司</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="cabinClass" class="form-control">仓位等级</label>
+            <select class="form-control" id="cabinClass" required>
+                <option value="economy">经济舱</option>
+                <option value="business">商务舱</option>
+                <option value="first">头等舱</option>
+            </select>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">更新行程</button>
+        </div>
+    </form>
+</div>
+
+<!-- 引入jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 引入Bootstrap JS -->
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 提交表单事件处理
+        $('#tripUpdateForm').submit(function (e) {
+            e.preventDefault();
+
+            var tripId = $('#tripId').val();
+            var tripData = {
+                id: tripId,
+                tripNumber: $('#tripNumber').val(),
+                startTime: $('#startTime').val(),
+                endTime: $('#endTime').val(),
+                startLocation: $('#startLocation').val(),
+                endLocation: $('#endLocation').val(),
+                flightNumber: $('#flightNumber').val(),
+                airline: $('#airline').val(),
+                cabinClass: $('#cabinClass').val()
+            };
+
+            // 使用fetch API发送PUT请求到后端更新行程接口
+            fetch('/trip/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tripData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === "0") {
+                        alert('行程更新成功！');
+                        // 这里可以根据需求进行日前的跳转或其他操作，比如跳转到行程列表页面
+                        window.location.href = data.url;
+                    } else {
+                        alert('行程更新失败：' + data.msg);
+                    }
+                })
+                .catch(error => {
+                    console.error('更新行程请求失败：', error);
+                    alert('更新行程请求失败，请稍后重试');
+                });
+        });})
+</script>
+</body>
+
+</html>

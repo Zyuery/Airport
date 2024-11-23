@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主页页面</title>
+    <style>
+        /* 全局样式设置 */
+        body {
+            font-family: 'Roboto', sans-serif; /* 更换为更美观的字体 */
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column; /* 改为列布局，方便后续头部、内容、底部的布局划分 */
+            min-height: 100vh; /* 确保页面至少占满视口高度 */
+        }
+
+        /* 页面头部样式 */
+        header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        /* 主内容区域样式 */
+        main {
+            flex: 1; /* 让内容区域占据剩余空间，使页面底部的元素能始终在底部 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 页面底部样式（可用于放置版权信息等，这里暂未添加具体内容） */
+        footer {
+            background-color: #ccc;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        /* 主页内容区域容器样式 */
+        #home-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            width: 80%; /* 适当增加宽度，使其在不同屏幕尺寸下更美观 */
+            max-width: 600px; /* 设置最大宽度，避免在大屏幕上过于宽散 */
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333; /* 调整标题颜色，使其更清晰易读 */
+        }
+
+        /* 退出按钮样式 */
+        #logoutButton {
+            background-color: #ff0000;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease; /* 添加鼠标悬停效果的过渡动画 */
+        }
+
+        #logoutButton:hover {
+            background-color: #cc0000; /* 鼠标悬停时按钮颜色变深 */
+        }
+
+        /* 悬浮窗样式 */
+        #messagePopup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8); /* 增加透明度，使其更醒目 */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* 添加阴影效果 */
+            display: none;
+            opacity: 0; /* 初始透明度为0，用于添加淡入效果 */
+            transition: opacity 0.3s ease; /* 设置显示隐藏的过渡动画 */
+        }
+
+        /* 生成短令牌和下载文件的块样式 */
+        .token-download-section {
+            margin-top: 30px;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .token-download-section label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555; /* 调整标签颜色，使其更清晰易读 */
+        }
+
+        .token-download-section input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 70%;
+        }
+
+        .token-download-section select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+
+        .token-download-section button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease; /* 添加鼠标悬停效果的过渡动画 */
+        }
+
+        .token-download-section button:hover {
+            background-color: #0056b3; /* 鼠标悬停时按钮颜色变深 */
+        }
+
+        /* 用户管理和行程管理列的容器样式 */
+        .management-columns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        /* 用户管理和行程管理列的标题样式 */
+        .management-columns h3 {
+            color: #333; /* 调整标题颜色，使其更清晰易读 */
+        }
+
+        /* 用户管理和行程管理列的按钮通用样式 */
+        .management-columns button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* 添加鼠标悬停效果和点击动画的过渡动画 */
+        }
+
+        .management-columns button:hover {
+            background-color: #0056b3; /* 鼠标悬停时按钮颜色变深 */
+        }
+
+        .management-columns button:active {
+            transform: scale(0.95); /* 按钮按下时缩小一点，提供点击反馈 */
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+<!-- 页面头部 -->
+<header>
+    <h1>机场管理系统</h1> <!-- 这里可替换为应用的实际名称或标志等 -->
+</header>
+
+<!-- 主内容区域 -->
+<main>
+    <div id="home-content">
+        <h2 th:text="${welcomeMessage}"></h2>
+
+        <button id="logoutButton">退出登录</button>
+
+        <!-- 添加悬浮窗元素 -->
+        <div id="messagePopup"></div>
+
+        <!-- 用户管理和行程管理列 -->
+        <div class="management-columns">
+            <!-- 用户管理列 -->
+            <div>
+                <h3>管理User</h3>
+                <button onclick="location.href='/user/add'" style="margin-bottom: 10px;">增</button>
+                <button onclick="location.href='/user/delete'" style="margin-bottom: 10px;">删</button>
+                <button onclick="location.href='/user/update'" style="margin-bottom: 10px;">改</button>
+                <button onclick="location.href='/user/search/view'" style="margin-bottom: 10px;">查</button>
+            </div>
+            <!-- 行程管理列 -->
+            <div>
+                <h3>管理Trip</h3>
+                <button onclick="location.href='/trip/add'" style="margin-bottom: 10px;">增</button>
+                <button onclick="location.href='/trip/delete'" style="margin-bottom: 10px;">删</button>
+                <button onclick="location.href='/trip/update'" style="margin-bottom: 10px;">改</button>
+                <button onclick="location.href='/trip/search/view'" style="margin-bottom: 10px;">查</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- 页面底部（可根据需要添加内容） -->
+<footer>
+    <!-- 这里可添加版权信息等内容 -->
+</footer>
+
+<script>
+    window.onload = function () {
+        // 退出按钮点击事件
+        document.getElementById('logoutButton').addEventListener('click', function () {
+            fetch('/admin/logout', {
+                method: 'GET'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('后端返回的数据:', data);
+                    if (data.code === "0") {
+                        // 退出成功，设置悬浮窗消息并显示
+                        document.getElementById('messagePopup').textContent = data.msg;
+                        document.getElementById('messagePopup').style.display = 'block';
+                        document.getElementById('messagePopup').style.opacity = '1'; /* 添加淡入效果 */
+                        // 设置定时器，跳转到登录页面
+                        setTimeout(() => {
+                            window.location.href = data.url;
+                        }, 1500);
+                    }
+                })
+                .catch(error => console.error('退出请求失败:', error));
+        });
+    }
+</script>
+</body>
+
+</html>

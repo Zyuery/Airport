@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新用户</title>
+    <!-- 引入Bootstrap CSS（使用.bootcdn.cn镜像源） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">更新用户</h1>
+    <form id="userUpdateForm">
+        <div class="mb-3">
+            <label for="userId" class="form-label">请输入要更新的用户ID</label>
+            <input type="number" class="form-control" id="userId" required>
+        </div>
+        <div class="mb-3">
+            <label for="userName" class="form-control">用户名</label>
+            <input type="text" class="form-control" id="userName" required>
+        </div>
+        <div class="mb-3">
+            <label for="userPassword" class="form-control">用户密码</label>
+            <input type="password" class="form-control" id="userPassword" required>
+        </div>
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-control">电话号码</label>
+            <input type="text" class="form-control" id="phoneNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="emailAddress" class="form-control">电子邮箱</label>
+            <input type="email" class="form-control" id="emailAddress" required>
+        </div>
+        <div class="mb-3">
+            <label for="gender" class="form-control">性别</label>
+            <select class="form-select" id="gender" required>
+                <option value="male">男</option>
+                <option value="female">女</option>
+                <option value="other">其他</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="birthday" class="form-control">生日</label>
+            <input type="date" class="form-control" id="birthday" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">更新用户</button>
+        </div>
+    </form>
+</div>
+
+<!-- 引入jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 引入Bootstrap JS（使用.bootcdn.cn镜像源） -->
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 提交表单事件处理
+        $('#userUpdateForm').submit(function (e) {
+            e.preventDefault();
+
+            var userData = {
+                id: $('#userId').val(),
+                userName: $('#userName').val(),
+                userPassword: $('#userPassword').val(),
+                phoneNumber: $('#phoneNumber').val(),
+                emailAddress: $('#emailAddress').val(),
+                gender: $('#gender').val(),
+                birthday: $('#birthday').val()
+            };
+
+            // 使用fetch API发送PUT请求到后端更新用户接口
+            fetch('/user/update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === "0") {
+                        alert('用户更新成功！');
+                        // 这里可以根据需求进行页面跳转或其他操作，比如跳转到用户列表页面
+                        window.location.href = data.url;
+                    } else {
+                        alert('用户更新失败：' + data.msg);
+                    }
+                })
+                .catch(error => {
+                    console.error('更新用户请求失败：',  error);
+                    alert('更新用户请求失败，请稍后重试');
+                });
+        });
+    });
+</script>
+</body>
+
+</html>

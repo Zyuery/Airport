@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>删除行程</title>
+    <!-- 引入Bootstrap CSS（使用.bootcdn.cn镜像源） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">删除行程</h1>
+    <form id="tripDeleteForm">
+        <div class="mb-3">
+            <label for="tripId" class="form-label">请输入要删除的行程ID</label>
+            <input type="number" class="form-control" id="tripId" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-danger">删除行程</button>
+        </div>
+    </form>
+</div>
+
+<!-- 引入jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 引入Bootstrap JS -->
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 提交表单事件处理
+        $('#tripDeleteForm').submit(function (e) {
+            e.preventDefault();
+
+            var tripId = $('#tripId').val();
+
+            // 使用fetch API发送DELETE请求到后端删除行程接口
+            fetch('/trip/delete/' + tripId, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.code === "0") {
+                        alert('行程删除成功！');
+                        // 这里可以根据需求进行页面跳转或其他操作，比如跳转到行程列表页面
+                        window.location.href = data.url;
+                    } else {
+                        alert('行程删除失败：' + data.msg);
+                    }
+                })
+                .catch(error => {
+                    console.error('删除行程请求失败：', error);
+                    alert('删除行程请求失败，请稍后重试');
+                });
+        });
+    });
+</script>
+</body>
+
+</html>

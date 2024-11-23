@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加行程</title>
+    <!-- 引入Bootstrap CSS（使用.bootcdn.cn镜像源） -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="text-center">添加行程</h1>
+    <form id="tripAddForm">
+        <div class="mb-3">
+            <label for="tripNumber" class="form-label">行程编号</label>
+            <input type="text" class="form-control" id="tripNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="startTime" class="form-label">开始时间</label>
+            <input type="datetime-local" class="form-control" id="startTime" required>
+        </div>
+        <div class="mb-3">
+            <label for="endTime" class="form-label">结束时间</label>
+            <input type="datetime-local" class="form-control" id="endTime" required>
+        </div>
+        <div class="mb-3">
+            <label for="startLocation" class="form-label">出发地</label>
+            <select class="form-select" id="startLocation" required>
+                <option value="北京">北京</option>
+                <option value="上海">上海</option>
+                <option value="广州">广州</option>
+                <option value="深圳">深圳</option>
+            </select>
+        </div>
+        <label for="endLocation" class="form-label">目的地</label>
+        <select class="form-select" id="endLocation" required>
+            <option value="北京">北京</option>
+            <option value="上海">上海</option>
+            <option value="广州">广州</option>
+            <option value="深圳">深圳</option>
+        </select>
+        <div class="mb-3">
+            <label for="flightNumber" class="form-label">航班号</label>
+            <input type="text" class="form-control" id="flightNumber" required>
+        </div>
+        <div class="mb-3">
+            <label for="airline" class="form-label">航空公司</label>
+            <select class="form-select" id="airline" required>
+                <option value="中国国际航空股份有限公司">中国国际航空股份有限公司</option>
+                <option value="中国东方航空股份有限公司">中国东方航空股份有限公司</option>
+                <option value="中国南方航空股份有限公司">中国南方航空股份有限公司</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="cabinClass" class="form-label">仓位等级</label>
+            <select class="form-select" id="cabinClass" required>
+                <option value="economy">经济舱</option>
+                <option value="business">商务舱</option>
+                <option value="first">头等舱</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="userid" class="form-label">用户ID（对应user表中的ID）</label>
+            <input type="number" class="form-control" id="userid" required>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">添加行程</button>
+        </div>
+    </form>
+</div>
+
+<!-- 引入jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 引入Bootstrap JS（使用.bootcdn.cn镜像源） -->
+<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // 提交表单事件处理
+        $('#tripAddForm').submit(function (e) {
+            e.preventDefault();
+
+            // 获取表单数据并组装成tripData对象
+            var tripData = {
+                tripNumber: $('#tripNumber').val(),
+                startTime: $('#startTime').val(),
+                endTime: $('#endTime').val(),
+                startLocation: $('#startLocation').val(),
+                endLocation: $('#endLocation').val(),
+                flightNumber: $('#flightNumber').val(),
+                airline: $('#airline').val(),
+                cabinClass: $('#cabinClass').val(),
+                userId: $('#userid').val()  // 修改成符合后端接受的字段名
+            };
+
+            // 使用 fetch API 发送 POST 请求到后端
+            fetch('/trip/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tripData)  // 将 tripData 转换为 JSON
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // 判断返回的状态码，进行不同的处理
+                    if (data.code === 0) {
+                        alert('行程添加成功！');
+                        window.location.href = data.url || '/trip/list';  // 如果有返回的 URL 跳转，否则默认跳转到行程列表页面
+                    } else {
+                        alert('行程添加失败：' + data.msg);
+                    }
+                })
+                .catch(error => {
+                    console.error('添加行程请求失败：', error);
+                    alert('添加行程请求失败，请稍后重试');
+                });
+        });
+    });
+</script>
+</body>
+</html>
